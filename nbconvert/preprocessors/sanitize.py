@@ -108,13 +108,10 @@ class SanitizeHTML(Preprocessor):
           code:
             Sanitize outputs that could result in code execution
         """
-        if cell.cell_type == "raw":
+        if cell.cell_type in ["raw", "markdown"]:
             # Sanitize all raw cells anyway.
             # Only ones with the text/html mimetype should be emitted
             # but erring on the side of safety maybe.
-            cell.source = self.sanitize_html_tags(cell.source)
-            return cell, resources
-        elif cell.cell_type == "markdown":
             cell.source = self.sanitize_html_tags(cell.source)
             return cell, resources
         elif cell.cell_type == "code":
@@ -138,14 +135,14 @@ class SanitizeHTML(Preprocessor):
                 if key in self.safe_output_keys:
                     continue
                 elif key in self.sanitized_output_types:
-                    self.log.info("Sanitizing %s" % key)
+                    self.log.info(f"Sanitizing {key}")
                     data[key] = self.sanitize_html_tags(data[key])
                 else:
                     # Mark key for removal. (Python doesn't allow deletion of
                     # keys from a dict during iteration)
                     to_remove.append(key)
             for key in to_remove:
-                self.log.info("Removing %s" % key)
+                self.log.info(f"Removing {key}")
                 del data[key]
         return outputs
 

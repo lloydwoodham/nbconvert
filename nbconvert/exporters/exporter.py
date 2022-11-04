@@ -180,10 +180,7 @@ class Exporter(LoggingConfigurable):
 
         modified_date = datetime.datetime.fromtimestamp(os.path.getmtime(filename))
         # datetime.strftime date format for ipython
-        if sys.platform == "win32":
-            date_format = "%B %d, %Y"
-        else:
-            date_format = "%B %-d, %Y"
+        date_format = "%B %d, %Y" if sys.platform == "win32" else "%B %-d, %Y"
         resources["metadata"]["modified_date"] = modified_date.strftime(date_format)
 
         with open(filename, encoding="utf-8") as f:

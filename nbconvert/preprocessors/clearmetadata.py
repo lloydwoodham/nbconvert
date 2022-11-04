@@ -62,23 +62,24 @@ class ClearMetadataPreprocessor(Preprocessor):
         for k, v in items:
             keep_nested = keep_nested_lookup.get(k)
             if k in keep_current:
-                if keep_nested is not None:
-                    if isinstance(v, dict):
-                        yield k, dict(self.nested_filter(v.items(), keep_nested))
-                else:
+                if keep_nested is None:
                     yield k, v
+
+                elif isinstance(v, dict):
+                    yield k, dict(self.nested_filter(v.items(), keep_nested))
 
     def preprocess_cell(self, cell, resources, cell_index):
         """
         All the code cells are returned with an empty metadata field.
         """
-        if self.clear_cell_metadata:
-            if cell.cell_type == "code":
-                # Remove metadata
-                if "metadata" in cell:
-                    cell.metadata = dict(
-                        self.nested_filter(cell.metadata.items(), self.preserve_cell_metadata_mask)
-                    )
+        if (
+            self.clear_cell_metadata
+            and cell.cell_type == "code"
+            and "metadata" in cell
+        ):
+            cell.metadata = dict(
+                self.nested_filter(cell.metadata.items(), self.preserve_cell_metadata_mask)
+            )
         return cell, resources
 
     def preprocess(self, nb, resources):
@@ -96,9 +97,8 @@ class ClearMetadataPreprocessor(Preprocessor):
             preprocessors to pass variables into the Jinja engine.
         """
         nb, resources = super().preprocess(nb, resources)
-        if self.clear_notebook_metadata:
-            if "metadata" in nb:
-                nb.metadata = dict(
-                    self.nested_filter(nb.metadata.items(), self.preserve_nb_metadata_mask)
-                )
+        if self.clear_notebook_metadata and "metadata" in nb:
+            nb.metadata = dict(
+                self.nested_filter(nb.metadata.items(), self.preserve_nb_metadata_mask)
+            )
         return nb, resources

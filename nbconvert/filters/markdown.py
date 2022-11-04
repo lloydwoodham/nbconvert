@@ -17,7 +17,7 @@ except ImportError as e:
 
     def markdown2html_mistune(source):
         """mistune is unavailable, raise ImportError"""
-        raise ImportError("markdown2html requires mistune: %s" % _mistune_import_error)
+        raise ImportError(f"markdown2html requires mistune: {_mistune_import_error}")
 
 
 from .pandoc import convert_pandoc

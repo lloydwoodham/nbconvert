@@ -32,8 +32,8 @@ class ExportersTestsBase(TestsBase):
         exporter = self.exporter_class()
         (output, resources) = exporter.from_filename(self._get_notebook("rawtest.ipynb"))
         for inc in self.should_include_raw:
-            self.assertIn("raw %s" % inc, output, "should include %s" % inc)
+            self.assertIn(f"raw {inc}", output, f"should include {inc}")
         self.assertIn("no raw_mimetype metadata", output)
         for exc in all_raw_mimetypes.difference(self.should_include_raw):
-            self.assertNotIn("raw %s" % exc, output, "should exclude %s" % exc)
+            self.assertNotIn(f"raw {exc}", output, f"should exclude {exc}")
         self.assertNotIn("never be included", output)

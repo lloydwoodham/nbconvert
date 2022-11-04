@@ -71,9 +71,7 @@ class HighlightMagicsPreprocessor(Preprocessor):
             Source code of the cell to highlight
         """
 
-        m = self.re_magic_language.match(source)
-
-        if m:
+        if m := self.re_magic_language.match(source):
             # By construction of the re, the matched language must be in the
             # languages dictionary
             return self.default_languages[m.group(1)]
@@ -97,7 +95,6 @@ class HighlightMagicsPreprocessor(Preprocessor):
 
         # Only tag code cells
         if cell.cell_type == "code":
-            magic_language = self.which_magic_language(cell.source)
-            if magic_language:
+            if magic_language := self.which_magic_language(cell.source):
                 cell["metadata"]["magics_language"] = magic_language
         return cell, resources

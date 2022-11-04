@@ -36,8 +36,7 @@ class FilesWriter(WriterBase):
     # Make sure that the output directory exists.
     @observe("build_directory")
     def _build_directory_changed(self, change):
-        new = change["new"]
-        if new:
+        if new := change["new"]:
             ensure_dir_exists(new)
 
     def __init__(self, **kw):
@@ -112,7 +111,9 @@ class FilesWriter(WriterBase):
                     self._makedir(path)
 
                     # Copy if destination is different.
-                    if not os.path.normpath(dest) == os.path.normpath(matching_filename):
+                    if os.path.normpath(dest) != os.path.normpath(
+                        matching_filename
+                    ):
                         self.log.info("Copying %s -> %s", matching_filename, dest)
                         link_or_copy(matching_filename, dest)
 

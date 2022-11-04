@@ -109,7 +109,7 @@ class TestsBase(unittest.TestCase):
         # Because this is annoying to do inline
         outcome = {}
         for d in dict_args:
-            outcome.update(d)
+            outcome |= d
         return outcome
 
     def create_empty_notebook(self, path):

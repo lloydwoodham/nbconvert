@@ -69,7 +69,7 @@ def find_lab_theme(theme_name):
                     full_theme_name = labext_name
                     theme_path = Path(dirpath) / "themes" / labext_name
 
-    if len(matching_themes) == 0:
+    if not matching_themes:
         raise ValueError(f'Could not find lab theme "{theme_name}"')
 
     if len(matching_themes) > 1:
@@ -232,9 +232,7 @@ class HTMLExporter(TemplateExporter):
             # Try to find the theme with the given name, looking through the labextensions
             _, theme_path = find_lab_theme(name)
 
-            with open(theme_path / "index.css") as file:
-                data = file.read()
-
+            data = Path(theme_path / "index.css").read_text()
             # Embed assets (fonts, images...)
             for asset in os.listdir(theme_path):
                 local_url = f"url({Path(asset).as_posix()})"

@@ -91,7 +91,7 @@ def export(exporter, nb, **kw):
     return output, resources
 
 
-def get_exporter(name, config=get_config()):  # noqa
+def get_exporter(name, config=get_config()):    # noqa
     """Given an exporter name or import path, return a class ready to be instantiated
 
     Raises ExporterName if exporter is not found or ExporterDisabledError if not enabled
@@ -102,7 +102,7 @@ def get_exporter(name, config=get_config()):  # noqa
 
     try:
         exporters = entry_points(group="nbconvert.exporters")
-        exporter = [e for e in exporters if e.name == name or e.name == name.lower()][0].load()
+        exporter = [e for e in exporters if e.name in [name, name.lower()]][0].load()
         if getattr(exporter(config=config), "enabled", True):
             return exporter
         else:
@@ -119,12 +119,10 @@ def get_exporter(name, config=get_config()):  # noqa
                 raise ExporterDisabledError('Exporter "%s" disabled in configuration' % (name))
         except ImportError:
             log = get_logger()
-            log.error("Error importing %s" % name, exc_info=True)
+            log.error(f"Error importing {name}", exc_info=True)
 
     raise ExporterNameError(
-        'Unknown exporter "{}", did you mean one of: {}?'.format(
-            name, ", ".join(get_export_names())
-        )
+        f'Unknown exporter "{name}", did you mean one of: {", ".join(get_export_names())}?'
     )
 
 

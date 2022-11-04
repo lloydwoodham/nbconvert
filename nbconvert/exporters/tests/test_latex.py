@@ -183,7 +183,7 @@ class TestLatexExporter(ExportersTestsBase):
         nb.cells.append(v4.new_code_cell("some_text"))
 
         def custom_highlight_code(source, language="python", metadata=None, strip_verbatim=False):
-            return source + " ADDED_TEXT"
+            return f"{source} ADDED_TEXT"
 
         filters = {"highlight_code": custom_highlight_code}
         (output, resources) = LatexExporter(filters=filters).from_notebook_node(nb)

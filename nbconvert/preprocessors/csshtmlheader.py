@@ -63,12 +63,9 @@ class CSSHTMLHeaderPreprocessor(Preprocessor):
         """
         from pygments.formatters import HtmlFormatter
 
-        header = []
-
         formatter = HtmlFormatter(style=self.style)
         pygments_css = formatter.get_style_defs(self.highlight_class)
-        header.append(pygments_css)
-
+        header = [pygments_css]
         # Load the user's custom CSS and IPython's default custom CSS.  If they
         # differ, assume the user has made modifications to his/her custom CSS
         # and that we should inline it in the nbconvert output.

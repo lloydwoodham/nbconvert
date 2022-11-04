@@ -78,7 +78,7 @@ class TestHTMLExporter(ExportersTestsBase):
         )
         check_for_png = re.compile(r'<img src="[^"]*?"([^>]*?)>')
         result = check_for_png.search(output)
-        attr_string = result.group(1)
+        attr_string = result[1]
         assert "width" in attr_string
         assert "height" in attr_string
 
@@ -104,8 +104,11 @@ class TestHTMLExporter(ExportersTestsBase):
         )
         check_for_png = re.compile(r'<img src="[^"]*?"([^>]*?)>')
         result = check_for_png.search(output)
-        self.assertTrue(result.group(0).strip().startswith('<img src="data:image/png;base64,iVBOR'))
-        self.assertTrue(result.group(1).strip().startswith('alt="image.png"'))
+        self.assertTrue(
+            result[0].strip().startswith('<img src="data:image/png;base64,iVBOR')
+        )
+
+        self.assertTrue(result[1].strip().startswith('alt="image.png"'))
 
         check_for_data = re.compile(r'<img src="(?P<url>[^"]*?)"')
         results = check_for_data.findall(output)
@@ -118,7 +121,7 @@ class TestHTMLExporter(ExportersTestsBase):
         nb.cells.append(v4.new_code_cell("some_text"))
 
         def custom_highlight_code(source, language="python", metadata=None):
-            return source + " ADDED_TEXT"
+            return f"{source} ADDED_TEXT"
 
         filters = {"highlight_code": custom_highlight_code}
         (output, resources) = HTMLExporter(

@@ -59,9 +59,7 @@ class ScriptExporter(TemplateExporter):
             exporter = self._exporters[exporter_name]
             return exporter.from_notebook_node(nb, resources, **kw)
 
-        # Look up a script exporter for this notebook's language
-        lang_name = langinfo.get("name")
-        if lang_name:
+        if lang_name := langinfo.get("name"):
             self.log.debug("Using script exporter for language: %s", lang_name)
             exporter = self._get_language_exporter(lang_name)
             if exporter is not None:

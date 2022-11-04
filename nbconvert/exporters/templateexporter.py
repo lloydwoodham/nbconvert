@@ -208,9 +208,8 @@ class TemplateExporter(Exporter):
             directory, self.template_file = os.path.split(self.template_name)
             if directory:
                 directory, template_name = os.path.split(directory)
-            if directory:
-                if os.path.isabs(directory):
-                    self.extra_template_basedirs = [directory]
+            if directory and os.path.isabs(directory):
+                self.extra_template_basedirs = [directory]
         return template_name
 
     @observe("template_file")
@@ -235,7 +234,7 @@ class TemplateExporter(Exporter):
     @default("template_file")
     def _template_file_default(self):
         if self.template_extension:
-            return "index" + self.template_extension
+            return f"index{self.template_extension}"
 
     @observe("raw_template")
     def _raw_template_changed(self, change):
@@ -264,7 +263,7 @@ class TemplateExporter(Exporter):
     @default("template_extension")
     def _template_extension_default(self):
         if self.file_extension:
-            return self.file_extension + ".j2"
+            return f"{self.file_extension}.j2"
         else:
             return self.file_extension
 
@@ -558,10 +557,11 @@ class TemplateExporter(Exporter):
             compatibility_dir = os.path.join(root_dir, "nbconvert", "templates", "compatibility")
             paths.append(compatibility_dir)
 
-        additional_paths = []
-        for path in self.template_data_paths:
-            if not prune or os.path.exists(path):
-                additional_paths.append(path)
+        additional_paths = [
+            path
+            for path in self.template_data_paths
+            if not prune or os.path.exists(path)
+        ]
 
         return paths + self.extra_template_paths + additional_paths
 
@@ -602,7 +602,7 @@ class TemplateExporter(Exporter):
             if not found_at_least_one:
                 # Check for backwards compatibility template names
                 for root_dir in root_dirs:
-                    compatibility_file = base_template + ".tpl"
+                    compatibility_file = f"{base_template}.tpl"
                     compatibility_path = os.path.join(
                         root_dir, "nbconvert", "templates", "compatibility", compatibility_file
                     )
@@ -616,12 +616,12 @@ class TemplateExporter(Exporter):
                         conf = self.get_compatibility_base_template_conf(base_template)
                         self.template_name = conf.get("base_template")
                         break
-                if not found_at_least_one:
-                    paths = "\n\t".join(root_dirs)
-                    raise ValueError(
-                        "No template sub-directory with name %r found in the following paths:\n\t%s"
-                        % (base_template, paths)
-                    )
+            if not found_at_least_one:
+                paths = "\n\t".join(root_dirs)
+                raise ValueError(
+                    "No template sub-directory with name %r found in the following paths:\n\t%s"
+                    % (base_template, paths)
+                )
             merged_conf = recursive_update(dict(conf), merged_conf)
             base_template = conf.get("base_template")
         conf = merged_conf

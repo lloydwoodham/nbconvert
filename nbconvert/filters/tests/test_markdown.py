@@ -98,7 +98,7 @@ class TestMarkdown(TestsBase):
         rendered = tpl.render(long_line=long_line)
         _, latex, rst = rendered.split("#")
 
-        self.assertEqual(latex.strip(), "latex %s" % long_line)
+        self.assertEqual(latex.strip(), f"latex {long_line}")
         self.assertEqual(rst.strip(), "rst %s" % long_line.replace(" ", "\n"))
 
     def test_markdown2html(self):
@@ -168,7 +168,7 @@ class TestMarkdown(TestsBase):
                 search_result = re.search(
                     "\\\\begin\\{equation.*\\}.*\\\\end\\{equation.*\\}", result, re.DOTALL
                 )
-            math = search_result.group(0)
+            math = search_result[0]
             # the resulting math part can not contain "<", ">" or
             # "&" not followed by "lt;", "gt;", or "amp;".
             self.assertNotIn("<", math)

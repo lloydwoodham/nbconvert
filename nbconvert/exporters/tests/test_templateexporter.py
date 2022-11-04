@@ -209,7 +209,7 @@ class TestExporter(ExportersTestsBase):
         template_dir, template_file = os.path.split(exporter.template.filename)
         _, compat_dir = os.path.split(template_dir)
         assert compat_dir == "compatibility"
-        assert template_file == template + ".tpl"
+        assert template_file == f"{template}.tpl"
         assert template_dir in exporter.template_paths
 
     def test_absolute_template_name_5x_compatibility_full(self):
@@ -649,5 +649,4 @@ class TestExporter(ExportersTestsBase):
         assert "(100,)" not in nb
 
     def _make_exporter(self, config=None):
-        exporter = SampleExporter(config=config)
-        return exporter
+        return SampleExporter(config=config)

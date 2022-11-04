@@ -86,4 +86,3 @@ class Preprocessor(NbConvertBase):
         """
 
         raise NotImplementedError("should be implemented by subclass")
-        return cell, resources
