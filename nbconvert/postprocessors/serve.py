@@ -65,8 +65,9 @@ class ServePostProcessor(PostProcessorBase):
         dirname, filename = os.path.split(input)
         handlers = [
             (r"/(.+)", web.StaticFileHandler, {"path": dirname}),
-            (r"/", web.RedirectHandler, {"url": "/%s" % filename}),
+            (r"/", web.RedirectHandler, {"url": f"/{filename}"}),
         ]
+
 
         if "://" in self.reveal_prefix or self.reveal_prefix.startswith("//"):
             # reveal specifically from CDN, nothing to do
@@ -76,7 +77,7 @@ class ServePostProcessor(PostProcessorBase):
             self.log.info("Serving local %s", self.reveal_prefix)
         else:
             self.log.info("Redirecting %s requests to %s", self.reveal_prefix, self.reveal_cdn)
-            handlers.insert(0, (r"/(%s)/(.*)" % self.reveal_prefix, ProxyHandler))
+            handlers.insert(0, (f"/({self.reveal_prefix})/(.*)", ProxyHandler))
 
         app = web.Application(
             handlers,
@@ -90,7 +91,7 @@ class ServePostProcessor(PostProcessorBase):
         http_server = httpserver.HTTPServer(app)
         http_server.listen(self.port, address=self.ip)
         url = "http://%s:%i/%s" % (self.ip, self.port, filename)
-        print("Serving your slides at %s" % url)
+        print(f"Serving your slides at {url}")
         print("Use Control-C to stop this server")
         if self.open_in_browser:
             try:
@@ -98,7 +99,7 @@ class ServePostProcessor(PostProcessorBase):
                 b = lambda: browser.open(url, new=2)  # noqa
                 threading.Thread(target=b).start()
             except webbrowser.Error as e:
-                self.log.warning("No web browser found: %s." % e)
+                self.log.warning(f"No web browser found: {e}.")
                 browser = None
 
         try:

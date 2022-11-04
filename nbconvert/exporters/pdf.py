@@ -28,8 +28,7 @@ class LatexFailed(IOError):
         return "PDF creating failed, captured latex output:\n%s" % self.output
 
     def __str__(self):
-        u = self.__unicode__()
-        return u
+        return self.__unicode__()
 
 
 def prepend_to_env_search_path(varname, value, envdict):
@@ -126,7 +125,7 @@ class PDFExporter(LatexExporter):
         prepend_to_env_search_path("BSTINPUTS", self.texinputs, env)
 
         with open(os.devnull, "rb") as null:
-            stdout = subprocess.PIPE if not self.verbose else None
+            stdout = None if self.verbose else subprocess.PIPE
             for _ in range(count):
                 p = subprocess.Popen(
                     command,
@@ -138,12 +137,7 @@ class PDFExporter(LatexExporter):
                 )
                 out, _ = p.communicate()
                 if p.returncode:
-                    if self.verbose:
-                        # verbose means I didn't capture stdout with PIPE,
-                        # so it's already been displayed and `out` is None.
-                        out = ""
-                    else:
-                        out = out.decode("utf-8", "replace")
+                    out = "" if self.verbose else out.decode("utf-8", "replace")
                     log_function(command, out)
                     self._captured_output.append(out)
                     if raise_on_failure:
@@ -195,7 +189,7 @@ class PDFExporter(LatexExporter):
             if self.run_bib(tex_file):
                 self.run_latex(tex_file)
 
-            pdf_file = notebook_name + ".pdf"
+            pdf_file = f"{notebook_name}.pdf"
             if not os.path.isfile(pdf_file):
                 raise LatexFailed("\n".join(self._captured_output))
             self.log.info("PDF successfully created")

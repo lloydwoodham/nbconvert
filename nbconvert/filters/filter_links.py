@@ -30,10 +30,9 @@ def resolve_one_reference(key, val, fmt, meta):
     if key == "Link":
         text = stringify(val[1])
         target = val[2][0]
-        m = re.match(r"#(.+)$", target)
-        if m:
+        if m := re.match(r"#(.+)$", target):
             # pandoc automatically makes labels for headings.
-            label = m.group(1).lower()
+            label = m[1].lower()
             label = re.sub(r"[^\w-]+", "", label)  # Strip HTML entities
             text = re.sub(r"_", r"\_", text)  # Escape underscores in display text
             return RawInline("tex", rf"\hyperref[{label}]{{{text}}}")

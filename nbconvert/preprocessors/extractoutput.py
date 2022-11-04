@@ -132,15 +132,9 @@ class ExtractOutputPreprocessor(Preprocessor):
 
                     if filename in resources["outputs"]:
                         raise ValueError(
-                            "Your outputs have filename metadata associated "
-                            "with them. Nbconvert saves these outputs to "
-                            "external files using this filename metadata. "
-                            "Filenames need to be unique across the notebook, "
-                            "or images will be overwritten. The filename {} is "
-                            "associated with more than one output. The second "
-                            "output associated with this filename is in cell "
-                            "{}.".format(filename, cell_index)
+                            f"Your outputs have filename metadata associated with them. Nbconvert saves these outputs to external files using this filename metadata. Filenames need to be unique across the notebook, or images will be overwritten. The filename {filename} is associated with more than one output. The second output associated with this filename is in cell {cell_index}."
                         )
+
                     # In the resources, make the figure available via
                     #   resources['outputs']['filename'] = data
                     resources["outputs"][filename] = data

@@ -66,7 +66,7 @@ project = "nbconvert"
 from datetime import date
 
 year = date.today().year
-copyright = "2015-%s, Jupyter Development Team" % year
+copyright = f"2015-{year}, Jupyter Development Team"
 author = "Jupyter Development Team"
 
 extlinks = {"ghpull": ("https://github.com/jupyter/nbconvert/pull/%s", "PR #%s")}

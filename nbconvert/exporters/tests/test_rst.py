@@ -63,7 +63,7 @@ class TestRSTExporter(ExportersTestsBase):
         check_for_png = re.compile(r".. image::.*?\n\s+(.*?)\n\s*\n", re.DOTALL)
         result = check_for_png.search(output)
         assert result is not None
-        attr_string = result.group(1)
+        attr_string = result[1]
         assert ":width:" in attr_string
         assert ":height:" in attr_string
         assert "px" in attr_string

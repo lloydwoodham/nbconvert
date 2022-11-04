@@ -110,13 +110,21 @@ def check_pandoc_version():
     check_pandoc_version._cached = ok
     if not ok:
         warnings.warn(
-            "You are using an unsupported version of pandoc (%s).\n" % v
-            + "Your version must be at least (%s) " % _minimal_version
-            + "but less than (%s).\n" % _maximal_version
-            + "Refer to https://pandoc.org/installing.html.\nContinuing with doubts...",
+            (
+                (
+                    (
+                        "You are using an unsupported version of pandoc (%s).\n"
+                        % v
+                        + f"Your version must be at least ({_minimal_version}) "
+                    )
+                    + "but less than (%s).\n" % _maximal_version
+                )
+                + "Refer to https://pandoc.org/installing.html.\nContinuing with doubts..."
+            ),
             RuntimeWarning,
             stacklevel=2,
         )
+
     return ok
 
 

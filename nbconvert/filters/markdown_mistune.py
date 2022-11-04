@@ -158,10 +158,7 @@ class IPythonRenderer(HTMLRenderer):
         self.exclude_anchor_links = exclude_anchor_links
         self.anchor_link_text = anchor_link_text
         self.path = path
-        if attachments is not None:
-            self.attachments = attachments
-        else:
-            self.attachments = {}
+        self.attachments = attachments if attachments is not None else {}
 
     def block_code(self, code, info=None):
         lang = ""
@@ -239,7 +236,7 @@ class IPythonRenderer(HTMLRenderer):
                 preferred_mime_type = list(attachment.keys())[0]
             mime_type = preferred_mime_type
             data = attachment[mime_type]
-            src = "data:" + mime_type + ";base64," + data
+            src = f"data:{mime_type};base64,{data}"
 
         elif self.embed_images:
             base64_url = self._src_to_base64(src)

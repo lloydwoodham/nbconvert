@@ -59,14 +59,10 @@ class WidgetsDataTypeFilter(NbConvertBase):
             else {}
         )
         for fmt in self.display_data_priority:
-            if fmt in output:
-                # If there is no widget state available, we skip this mimetype
-                if (
-                    fmt == WIDGET_VIEW_MIMETYPE
-                    and output[WIDGET_VIEW_MIMETYPE]["model_id"] not in widgets_state
-                ):
-                    continue
-
+            if fmt in output and (
+                fmt != WIDGET_VIEW_MIMETYPE
+                or output[WIDGET_VIEW_MIMETYPE]["model_id"] in widgets_state
+            ):
                 return [fmt]
         warn(
             "Your element with mimetype(s) {mimetypes}"

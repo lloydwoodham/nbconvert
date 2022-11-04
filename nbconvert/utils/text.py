@@ -35,7 +35,4 @@ def indent(instr, nspaces=4, ntabs=0, flatten=False):
     else:
         pat = re.compile(r"^", re.MULTILINE)
     outstr = re.sub(pat, ind, instr)
-    if outstr.endswith(os.linesep + ind):
-        return outstr[: -len(ind)]
-    else:
-        return outstr
+    return outstr[: -len(ind)] if outstr.endswith(os.linesep + ind) else outstr

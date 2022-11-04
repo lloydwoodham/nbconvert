@@ -81,10 +81,7 @@ def html2text(element):
 
 
 def clean_html(element):
-    if isinstance(element, bytes):
-        element = element.decode()
-    else:
-        element = str(element)
+    element = element.decode() if isinstance(element, bytes) else str(element)
     return bleach.clean(
         element,
         tags=[*bleach.ALLOWED_TAGS, *ALLOWED_SVG_TAGS, "div", "pre", "code", "span"],
@@ -122,7 +119,7 @@ def add_anchor(html, anchor_link_text="¶"):
         return html
     link = _convert_header_id(html2text(h))
     h.set("id", link)
-    a = Element("a", {"class": "anchor-link", "href": "#" + link})
+    a = Element("a", {"class": "anchor-link", "href": f"#{link}"})
     try:
         # Test if the anchor link text is HTML (e.g. an image)
         a.append(ElementTree.fromstring(anchor_link_text))
@@ -136,11 +133,9 @@ def add_anchor(html, anchor_link_text="¶"):
 
 def add_prompts(code, first=">>> ", cont="... "):
     """Add prompts to code snippets"""
-    new_code = []
     code_list = code.split("\n")
-    new_code.append(first + code_list[0])
-    for line in code_list[1:]:
-        new_code.append(cont + line)
+    new_code = [first + code_list[0]]
+    new_code.extend(cont + line for line in code_list[1:])
     return "\n".join(new_code)
 
 
@@ -243,9 +238,7 @@ def posix_path(path):
     Mainly for use in latex on Windows,
     where native Windows paths are not allowed.
     """
-    if os.path.sep != "/":
-        return path.replace(os.path.sep, "/")
-    return path
+    return path.replace(os.path.sep, "/") if os.path.sep != "/" else path
 
 
 def path2url(path):

@@ -86,14 +86,14 @@ def _htmlconverter(fg, bg, bold, underline, inverse):
         fg, bg = bg, fg
 
     if isinstance(fg, int):
-        classes.append(_ANSI_COLORS[fg] + "-fg")
+        classes.append(f"{_ANSI_COLORS[fg]}-fg")
     elif fg:
         styles.append("color: rgb({},{},{})".format(*fg))
     elif inverse:
         classes.append("ansi-default-inverse-fg")
 
     if isinstance(bg, int):
-        classes.append(_ANSI_COLORS[bg] + "-bg")
+        classes.append(f"{_ANSI_COLORS[bg]}-bg")
     elif bg:
         styles.append("background-color: rgb({},{},{})".format(*bg))
     elif inverse:
@@ -187,16 +187,13 @@ def _ansi2anything(text, converter):
     out = []
 
     while text:
-        m = _ANSI_RE.search(text)
-        if m:
+        if m := _ANSI_RE.search(text):
             if m.group(2) == "m":
                 try:
                     # Empty code is same as code 0
                     numbers = [int(n) if n else 0 for n in m.group(1).split(";")]
                 except ValueError:
                     pass  # Invalid color specification
-            else:
-                pass  # Not a color code
             chunk, text = text[: m.start()], text[m.end() :]
         else:
             chunk, text = text, ""
@@ -205,10 +202,7 @@ def _ansi2anything(text, converter):
             starttag, endtag = converter(
                 fg + 8 if bold and fg in range(8) else fg, bg, bold, underline, inverse
             )
-            out.append(starttag)
-            out.append(chunk)
-            out.append(endtag)
-
+            out.extend((starttag, chunk, endtag))
         while numbers:
             n = numbers.pop(0)
             if n == 0:
@@ -252,8 +246,6 @@ def _ansi2anything(text, converter):
                 fg = n - 90 + 8
             elif 100 <= n <= 107:
                 bg = n - 100 + 8
-            else:
-                pass  # Unknown codes are ignored
     return "".join(out)
 
 

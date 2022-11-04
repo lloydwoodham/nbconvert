@@ -58,7 +58,7 @@ class DottedOrNone(DottedObjectName):
 
 
 nbconvert_aliases = {}
-nbconvert_aliases.update(base_aliases)
+nbconvert_aliases |= base_aliases
 nbconvert_aliases.update(
     {
         "to": "NbConvertApp.export_format",
@@ -76,7 +76,7 @@ nbconvert_aliases.update(
 )
 
 nbconvert_flags = {}
-nbconvert_flags.update(base_flags)
+nbconvert_flags |= base_flags
 nbconvert_flags.update(
     {
         "execute": (
@@ -386,11 +386,7 @@ class NbConvertApp(JupyterApp):
 
         # Specifying notebooks on the command-line overrides (rather than
         # adds) the notebook list
-        if self.extra_args:
-            patterns = self.extra_args
-        else:
-            patterns = self.notebooks
-
+        patterns = self.extra_args or self.notebooks
         # Use glob to replace all the notebook patterns with filenames.
         filenames = []
         for pattern in patterns:
@@ -398,7 +394,10 @@ class NbConvertApp(JupyterApp):
             # Use glob to find matching filenames.  Allow the user to convert
             # notebooks without having to type the extension.
             globbed_files = glob.glob(pattern, recursive=self.recursive_glob)
-            globbed_files.extend(glob.glob(pattern + ".ipynb", recursive=self.recursive_glob))
+            globbed_files.extend(
+                glob.glob(f"{pattern}.ipynb", recursive=self.recursive_glob)
+            )
+
             if not globbed_files:
                 self.log.warning("pattern %r matched no files", pattern)
 
@@ -452,10 +451,7 @@ class NbConvertApp(JupyterApp):
         self.log.debug("Notebook name is '%s'", notebook_name)
 
         # first initialize the resources we want to use
-        resources = {}
-        resources["config_dir"] = self.config_dir
-        resources["unique_key"] = notebook_name
-
+        resources = {"config_dir": self.config_dir, "unique_key": notebook_name}
         output_files_dir = self.output_files_dir.format(notebook_name=notebook_name)
 
         resources["output_files_dir"] = output_files_dir
@@ -522,8 +518,7 @@ class NbConvertApp(JupyterApp):
         if self.use_output_suffix and not self.output_base:
             notebook_name += resources.get("output_suffix", "")
 
-        write_results = self.writer.write(output, resources, notebook_name=notebook_name)
-        return write_results
+        return self.writer.write(output, resources, notebook_name=notebook_name)
 
     def postprocess_single_notebook(self, write_results):
         """Step 4: Post-process the written file
@@ -611,7 +606,7 @@ class NbConvertApp(JupyterApp):
         for flag, (cfg, fhelp) in self.flags.items():
             flags += f"{flag}\n"
             flags += indent(fill(fhelp, 80)) + "\n\n"
-            flags += indent(fill("Long Form: " + str(cfg), 80)) + "\n\n"
+            flags += indent(fill(f"Long Form: {str(cfg)}", 80)) + "\n\n"
         return flags
 
     def document_alias_help(self):
